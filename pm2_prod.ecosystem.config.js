@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "base_react_nextjs_project-20241220",
+      name: "react-item_selection",
 
       // "npm run start" from pm2 ecosystem file doesn't work,
       // causes infinite immediate restarts

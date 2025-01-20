@@ -1,5 +1,5 @@
 {
-  "name": "base_react_nextjs_project-20241220",
+  "name": "react-item_selection",
   "version": "0.1.0",
   "description": "Sample basic React Next.js project setup with some dev dependencies",
   "private": true,
@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/altoinu/base_react_nextjs_project-20241220.git"
+    "url": "git+https://github.com/altoinu/react-item_selection.git"
   },
   "author": "Kaoru Kawashima",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/altoinu/base_react_nextjs_project-20241220/issues"
+    "url": "https://github.com/altoinu/react-item_selection/issues"
   },
-  "homepage": "https://github.com/altoinu/base_react_nextjs_project-20241220#readme",
+  "homepage": "https://github.com/altoinu/react-item_selection#readme",
   "dependencies": {
     "next": "15.1.2",
     "react": "^19.0.0",
