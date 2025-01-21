@@ -1,10 +1,18 @@
-import { Fragment } from "react";
+"use client";
 
-type ListProps = {
-  items: { name: string; color: string }[];
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+
+type Item = { name: string; color: string };
+
+type ListItemProps = {
+  isSelected?: boolean;
+  item: Item;
+  onSelectChange?: () => void;
 };
 
-type Items = { name: string; color: string };
+type ListProps = {
+  items: Item[];
+};
 
 export default function Home() {
   // Implement a feature to allow item selection with the following requirements:
@@ -16,20 +24,75 @@ export default function Home() {
   //
   // Feel free to change the component structure at will.
 
-  const List = ({ items }: ListProps) => (
-    <Fragment>
-      <ul className="List">
-        {items.map((item) => (
-          <li
-            key={item.name}
-            className={`List__item List__item--${item.color}`}
-          >
-            {item.name}
-          </li>
-        ))}
-      </ul>
-    </Fragment>
-  );
+  const ListItem = ({
+    isSelected = false,
+    item,
+    onSelectChange,
+  }: ListItemProps) => {
+    useEffect(() => {
+      console.log("ListItem render", item.name, isSelected);
+    }, [item, isSelected]);
+
+    const handleItemClick = useCallback(() => {
+      if (onSelectChange) {
+        onSelectChange();
+      }
+    }, [onSelectChange]);
+
+    return (
+      <li
+        className={`List__item List__item--${item.color} ${isSelected ? "selected" : ""}`}
+        onClick={handleItemClick}
+      >
+        {item.name}
+      </li>
+    );
+  };
+
+  const List = ({ items }: ListProps) => {
+    useEffect(() => {
+      console.log("List render");
+    }, []);
+
+    const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+
+    const selectedItemNames = useMemo(
+      () =>
+        items
+          .filter((item) => selectedItems.includes(item))
+          .map((item) => item.name)
+          .join(", "),
+      [items, selectedItems],
+    );
+
+    const handleSelectChange = useCallback((item: Item) => {
+      setSelectedItems((currentSeletedItems) => {
+        if (!currentSeletedItems.includes(item)) {
+          return [...currentSeletedItems, item];
+        } else {
+          return currentSeletedItems.filter(
+            (currentItem) => currentItem !== item,
+          );
+        }
+      });
+    }, []);
+
+    return (
+      <Fragment>
+        <p>Currently Selected: {selectedItemNames}</p>
+        <ul className="List">
+          {items.map((item) => (
+            <ListItem
+              key={item.name}
+              isSelected={selectedItems.includes(item)}
+              item={item}
+              onSelectChange={() => handleSelectChange(item)}
+            />
+          ))}
+        </ul>
+      </Fragment>
+    );
+  };
 
   // ---------------------------------------
   // Do NOT change anything below this line.
@@ -68,13 +131,13 @@ export default function Home() {
   ];
 
   const items = sizes.reduce(
-    (items: Items[], size) => [
+    (items: Item[], size) => [
       ...items,
       ...fruits.reduce(
-        (acc: Items[], fruit) => [
+        (acc: Item[], fruit) => [
           ...acc,
           ...colors.reduce(
-            (acc: Items[], color) => [
+            (acc: Item[], color) => [
               ...acc,
               {
                 name: `${size} ${color} ${fruit}`,
