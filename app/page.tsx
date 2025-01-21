@@ -1,101 +1,157 @@
-import Image from "next/image";
+"use client";
+
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+
+type Item = { name: string; color: string };
+
+type ListItemProps = {
+  isSelected?: boolean;
+  item: Item;
+  onSelectChange?: () => void;
+};
+
+type ListProps = {
+  items: Item[];
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  // Implement a feature to allow item selection with the following requirements:
+  // 1. Clicking an item selects/unselects it.
+  // 2. Multiple items can be selected at a time.
+  // 3. Make sure to avoid unnecessary re-renders of each list item in the big list (performance).
+  // 4. Currently selected items should be visually highlighted.
+  // 5. Currently selected items' names should be shown at the top of the page.
+  //
+  // Feel free to change the component structure at will.
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const ListItem = ({
+    isSelected = false,
+    item,
+    onSelectChange,
+  }: ListItemProps) => {
+    useEffect(() => {
+      console.log("ListItem render", item.name, isSelected);
+    }, [item, isSelected]);
+
+    const handleItemClick = useCallback(() => {
+      if (onSelectChange) {
+        onSelectChange();
+      }
+    }, [onSelectChange]);
+
+    return (
+      <li
+        className={`List__item List__item--${item.color} ${isSelected ? "selected" : ""}`}
+        onClick={handleItemClick}
+      >
+        {item.name}
+      </li>
+    );
+  };
+
+  const List = ({ items }: ListProps) => {
+    useEffect(() => {
+      console.log("List render");
+    }, []);
+
+    const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+
+    const selectedItemNames = useMemo(
+      () =>
+        items
+          .filter((item) => selectedItems.includes(item))
+          .map((item) => item.name)
+          .join(", "),
+      [items, selectedItems],
+    );
+
+    const handleSelectChange = useCallback((item: Item) => {
+      setSelectedItems((currentSeletedItems) => {
+        if (!currentSeletedItems.includes(item)) {
+          return [...currentSeletedItems, item];
+        } else {
+          return currentSeletedItems.filter(
+            (currentItem) => currentItem !== item,
+          );
+        }
+      });
+    }, []);
+
+    return (
+      <Fragment>
+        <p>Currently Selected: {selectedItemNames}</p>
+        <ul className="List">
+          {items.map((item) => (
+            <ListItem
+              key={item.name}
+              isSelected={selectedItems.includes(item)}
+              item={item}
+              onSelectChange={() => handleSelectChange(item)}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          ))}
+        </ul>
+      </Fragment>
+    );
+  };
+
+  // ---------------------------------------
+  // Do NOT change anything below this line.
+  // ---------------------------------------
+
+  const sizes = ["tiny", "small", "medium", "large", "huge"];
+  const colors = [
+    "navy",
+    "blue",
+    "aqua",
+    "teal",
+    "olive",
+    "green",
+    "lime",
+    "yellow",
+    "orange",
+    "red",
+    "maroon",
+    "fuchsia",
+    "purple",
+    "silver",
+    "gray",
+    "black",
+  ];
+  const fruits = [
+    "apple",
+    "banana",
+    "watermelon",
+    "orange",
+    "peach",
+    "tangerine",
+    "pear",
+    "kiwi",
+    "mango",
+    "pineapple",
+  ];
+
+  const items = sizes.reduce(
+    (items: Item[], size) => [
+      ...items,
+      ...fruits.reduce(
+        (acc: Item[], fruit) => [
+          ...acc,
+          ...colors.reduce(
+            (acc: Item[], color) => [
+              ...acc,
+              {
+                name: `${size} ${color} ${fruit}`,
+                color,
+              },
+            ],
+            [],
+          ),
+        ],
+        [],
+      ),
+    ],
+    [],
   );
+
+  return <List items={items} />;
 }
