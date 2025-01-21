@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 const { Fragment } = React;
 
 // Implement a feature to allow item selection with the following requirements:
@@ -84,5 +82,3 @@ const items = sizes.reduce(
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<List items={items} />);
-
-/* eslint-enable */
